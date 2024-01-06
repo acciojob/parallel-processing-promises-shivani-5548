@@ -1,17 +1,32 @@
-const express = require('express');
-const path = require('path');
+//your JS code here. If required.
+const output = document.getElementById("output");
+const btn = document.getElementById("download-images-button");
 
-const app = express();
+const images = [
+  { url: "https://picsum.photos/id/237/200/300" },
+  { url: "https://picsum.photos/id/238/200/300" },
+  { url: "https://picsum.photos/id/239/200/300" },
+];
 
-app.use(express.static(__dirname))
+const imageLoad = (url) => {
+  return `<img src='${url}' />`;
+};
 
-app.get('/', (req, res) => {
-  res.sendFile(path.join(__dirname + '/main.html'));
+const all = async () => {
+  try {
+    const gallery = await Promise.all(images.map((val) => fetch(val.url)));
+    gallery.forEach((val) => {
+      output.insertAdjacentHTML("beforeend", imageLoad(val.url));
+    });
+
+    return gallery;
+  } catch (err) {
+    return "failed to load images";
+  }
+};
+
+btn.addEventListener("click", () => {
+  images.forEach((val) => {
+      output.insertAdjacentHTML("beforeend", imageLoad(val.url));
+    });
 });
-//your code here
-app.post('/add', (req, res) => {
-  const {a,b} = req.body;
-  res.status(200).send(a+b);
-  // res.sendFile(path.join(__dirname + '/main.html'));
-});
-module.exports = app;
